@@ -399,7 +399,16 @@ func parseMessageHeader(m *pmapi.Message, h message.Header) error { // nolint[fu
 		case "to":
 			toList, err := rfc5322.ParseAddressList(fields.Value())
 			if err != nil {
-				return errors.Wrap(err, "failed to parse to")
+				tokens := strings.Split(fields.Value(), " <")
+				if len(tokens) != 2 {
+					return errors.Wrap(err, "failed to parse to")
+				}
+				tokens[0] = "\"" + tokens[0] + "\""
+
+				toList, err = rfc5322.ParseAddressList(strings.Join(tokens, " <"))
+				if err != nil {
+					return errors.Wrap(err, "failed to parse to")
+				}
 			}
 			m.ToList = toList
 
