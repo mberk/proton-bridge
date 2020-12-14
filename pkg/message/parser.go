@@ -436,7 +436,28 @@ func parseMessageHeader(m *pmapi.Message, h message.Header) error { // nolint[fu
 		case "date":
 			date, err := rfc5322.ParseDateTime(fields.Value())
 			if err != nil {
-				return errors.Wrap(err, "failed to parse date")
+				new_value := fields.Value()
+				if strings.HasPrefix(fields.Value(), "Monday") {
+					new_value = strings.Replace(fields.Value(), "Monday", "Mon", 1)
+				} else if strings.HasPrefix(fields.Value(), "Tuesday") {
+					new_value = strings.Replace(fields.Value(), "Tuesday", "Tue", 1)
+				} else if strings.HasPrefix(fields.Value(), "Wednesday") {
+					new_value = strings.Replace(fields.Value(), "Wednesday", "Wed", 1)
+				} else if strings.HasPrefix(fields.Value(), "Thursday") {
+					new_value = strings.Replace(fields.Value(), "Thursday", "Thu", 1)
+				} else if strings.HasPrefix(fields.Value(), "Friday") {
+					new_value = strings.Replace(fields.Value(), "Friday", "Fri", 1)
+				} else if strings.HasPrefix(fields.Value(), "Saturday") {
+					new_value = strings.Replace(fields.Value(), "Saturday", "Sat", 1)
+				} else if strings.HasPrefix(fields.Value(), "Sunday") {
+					new_value = strings.Replace(fields.Value(), "Sunday", "Sun", 1)
+				}
+				if new_value != fields.Value() {
+					date, err = rfc5322.ParseDateTime(new_value)
+				}
+				if err != nil {
+					return errors.Wrap(err, "failed to parse date")
+				}
 			}
 			m.Time = date.Unix()
 		}
