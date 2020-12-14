@@ -452,6 +452,11 @@ func parseMessageHeader(m *pmapi.Message, h message.Header) error { // nolint[fu
 				} else if strings.HasPrefix(fields.Value(), "Sunday") {
 					new_value = strings.Replace(fields.Value(), "Sunday", "Sun", 1)
 				}
+				if strings.Contains(new_value, "+01:00") {
+					new_value = strings.Replace(new_value, "+01:00", "+0100", 1)
+				} else if strings.Contains(new_value, "+00:00") {
+					new_value = strings.Replace(new_value, "+00:00", "+0000", 1)
+				}
 				if new_value != fields.Value() {
 					date, err = rfc5322.ParseDateTime(new_value)
 				}
